@@ -125,8 +125,15 @@ export default function Home() {
 
   const handleDownload = useCallback(async () => {
     if (!captureRef.current) return;
-    const canvas = await html2canvas(captureRef.current, { scale: 1.5, useCORS: true });
-    const imgData = canvas.toDataURL('image/png');
+    const node = captureRef.current;
+    const canvas = await html2canvas(node, {
+      scale: 1,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      windowWidth: node.scrollWidth,
+      windowHeight: node.scrollHeight,
+    });
+    const imgData = canvas.toDataURL('image/jpeg', 0.7);
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
@@ -135,7 +142,7 @@ export default function Home() {
     const imgHeight = canvas.height * ratio;
     const x = (pageWidth - imgWidth) / 2;
     const y = (pageHeight - imgHeight) / 2;
-    pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+    pdf.addImage(imgData, 'JPEG', x, y, imgWidth, imgHeight, undefined, 'MEDIUM');
     pdf.save('Alejandro_De_La_Mora.pdf');
   }, []);
 
